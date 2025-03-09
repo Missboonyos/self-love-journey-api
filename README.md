@@ -137,5 +137,120 @@ app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
 ```
 
 # EP13 Routing ExpressJS
+## Step 1 Create New Folder: routes
+1. Create new folder: routes (the same level as other folders)
+2. Create new file: restaurant.js
+```js
+//import syntax for api part
+const express = require('express')
+const router = express.Router()
+
+// @ ENDPOINT http://localhost:5000
+router.get('/', (req, res)=>{
+    //code body
+    res.send("Hello Route")
+})
+
+
+//export
+module.exports = router
+```
+## Step 2 File: server.js
+- use Mr.Postman to test if req, res are working and OK
+```js
+//import express library
+const express = require('express')
+const cors = require('cors')
+const app = express()
+
+const restaurantRoute = require('./routes/restaurant')
+
+// middleware
+app.use(cors())
+app.use(express.json())
+
+//CRUD Method: GET, POST, PUT, PATCH, DELETE
+app.use('/api', restaurantRoute)
+
+
+// app.get('/', (req, res)=> {
+//     //code body
+//     res.json({message:'Hello'})
+// })
+
+// app.get("/", (req, res)=> {
+//     console.log('hello Easy Backend')
+//     // res.send('Hello Easy Backend')
+//     const june = 'easy backend'
+//     res.json({ june })
+// })
+
+
+const PORT = 5000
+app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
+```
+
+## Step 3 File: restaurant.js
+- use Mr.Postman to test if req, res are working and OK
+```js
+//import syntax for api part
+const express = require('express')
+const router = express.Router()
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD GET = list restaurant (list all data)
+// @ACCESS Public
+router.get('/restaurant', (req, res)=> {
+    //code body
+    res.send("Hello Route")
+})
+
+// @ENDPOINT http://localhost:5000/api/restaurant/id
+// @METHOD GET = read restaurant
+// @ACCESS Public
+router.get('/restaurant/:id', (req, res)=>{
+    //code body
+    res.send("Hello Route")
+})
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD POST = create restaurant
+// @ACCESS Private
+// Body = needed
+router.post('/restaurant', (req, res)=> {
+    //code body
+    const { menu, price } = req.body
+    console.log(menu)
+    console.log(price)
+    res.send("Hello, POST Restaurant")
+})
+
+// @ENDPOINT http://localhost:5000/api/restaurant/9
+// @METHOD PUT = edit restaurant
+// id is required
+// @ACCESS Private
+router.put('/restaurant/:id', (req, res)=>{
+    //code body
+    console.log(req.params.id)
+    res.send("Restaurant Edit PUT")
+})
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD DELETE = delete restaurant
+// @ACCESS Private
+router.delete('/restaurant/:id', (req, res)=>{
+    //code body
+    res.send('Hello, DELETE')    
+})
+
+
+
+
+
+//export
+module.exports = router
+```
+
+
 
 
