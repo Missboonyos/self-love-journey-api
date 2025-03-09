@@ -1,6 +1,11 @@
 //import syntax for api part
 const express = require('express')
 const router = express.Router()
+// Controllers
+const { } = require('../controllers/restaurant')
+
+
+
 
 // @ENDPOINT http://localhost:5000/api/restaurant
 // @METHOD GET = list restaurant (list all data)

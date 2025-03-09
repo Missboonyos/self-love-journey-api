@@ -243,12 +243,27 @@ router.delete('/restaurant/:id', (req, res)=>{
     res.send('Hello, DELETE')    
 })
 
-
-
-
-
 //export
 module.exports = router
+```
+# EP.14 Controllers
+## Step 1 Create New Folder: controllers
+1. new file: restaurant.js
+```js
+
+
+exports.listRestaurant = (req, res)=> {
+    console.log('Hello, Controllers')
+    res.send('Hello, Controllers')
+}
+```
+
+## Step 2 Go to routes \ restaurant.js
+- add Controllers
+
+```js
+
+
 ```
 
 
