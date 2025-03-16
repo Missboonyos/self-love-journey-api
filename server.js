@@ -4,11 +4,12 @@ const cors = require('cors')
 const app = express()
 
 const restaurantRoute = require('./routes/restaurant')
+const morgan = require('morgan')
 
 // middleware
 app.use(cors())
-app.use(express.json())
-
+app.use(express.json()) // for letting server to understand json data (client send json data to server)
+app.use(morgan('dev'))
 //CRUD Method: GET, POST, PUT, PATCH, DELETE
 app.use('/api', restaurantRoute)
 

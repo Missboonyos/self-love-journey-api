@@ -10,6 +10,8 @@ const {
   deleteRestaurant,
 } = require("../controllers/restaurant");
 
+const { authCheck } = require("../middlewares/auth");
+
 // @ENDPOINT http://localhost:5000/api/restaurant
 // @METHOD GET = list restaurant (list all data)
 // @ACCESS Public
@@ -19,9 +21,10 @@ const {
 //     res.send("Hello Route")
 // })
 
+
 // After using controllers, the codes are written in the controllers
 // ** The controllers are imported in the routes
-router.get("/restaurant", listRestaurant);
+router.get("/restaurant", authCheck, listRestaurant);
 
 // @ENDPOINT http://localhost:5000/api/restaurant/id
 // @ENDPOINT http://localhost:5000/api/restaurant/5

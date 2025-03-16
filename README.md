@@ -709,3 +709,382 @@ router.delete("/restaurant/:id", deleteRestaurant);
 module.exports = router;
 ```
 
+# EP.15 Middleware: To verify authorized token, authentication 
+## Step 1 Go to routes\restaurant.js
+1. Open Mr.Postman
+2. Open file routes\restaurant.js
+3. Work on router.get (Method GET)
+- declare const authCheck & only 2 params (req, res) and console.log('Hello, Middleware)
+- add authCheck in the middle of router.get("/restaurant", authCheck, listRestaurant)
+4. Test via Mr.Postman & The results are ;
+- console.log result: We get 'Hello, Middleware
+- But the process on Postman is pending due to authCheck.
+5. Aj. solves the problem of suspending Postman by adding another param; next then use next() 
+- const authCheck = (req, res, next) => {} next();
+6. Aj. taught another way to use trycatch.
+- If true, console result will show ;
+> Server is running on port 5000 //
+> Hello, Middleware //
+> Hello, Controllers
+
+- if false, the result will be;
+> Server is running on port 5000 //
+> Hello, Middleware //
+
+```js
+//import syntax for api part
+const express = require("express");
+const router = express.Router();
+// import Controllers
+const {
+  listRestaurant,
+  readRestaurant,
+  createRestaurant,
+  updateRestaurant,
+  deleteRestaurant,
+} = require("../controllers/restaurant");
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD GET = list restaurant (list all data)
+// @ACCESS Public
+// ** Before using controllers, the codes are written in the routes
+// router.get('/restaurant', (req, res)=> {
+//     //code body
+//     res.send("Hello Route")
+// })
+
+// Middleware
+// 1st sample
+// const authCheck = (req, res, next) => {
+//   //code body
+//   console.log('Hello, Middleware');
+//   next();
+// }
+
+// 2nd sample: Aj. taught logic of trycatch
+const authCheck = (req, res, next) => {
+  // code body
+  try {
+    console.log("Hello, Middleware");
+    if (false) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+router.get("/restaurant", authCheck, listRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant/id
+// @ENDPOINT http://localhost:5000/api/restaurant/5
+// @METHOD GET = Read restaurant
+// @ACCESS Public
+// Method read restaurant by id
+// id is required
+// ** Before using controllers, the codes are written in the routes
+// router.get('/restaurant/:id', (req, res)=>{
+//     //code body
+//     res.send("Hello Route")
+// })
+
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+// @ENDPOINT http://localhost:5000/api/restaurant/5
+router.get("/restaurant/:id", readRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD POST = create restaurant
+// @ACCESS Private
+// Body = needed
+// ** Before using controllers, the codes are written in the routes
+// router.post('/restaurant', (req, res)=> {
+//     //code body
+//     const { menu, price } = req.body
+//     console.log(menu)
+//     console.log(price)
+//     res.send("Hello, POST Restaurant")
+// })
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+// @ENDPOINT http://localhost:5000/api/restaurant
+router.post("/restaurant", createRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant/9
+// @METHOD PUT = edit restaurant
+// id is required
+// @ACCESS Private
+// router.put('/restaurant/:id', (req, res)=>{
+//code body
+//     console.log(req.params.id)
+//     res.send("Restaurant Edit PUT")
+// })
+
+// After using controllers, the codes are written in the controllers
+router.put("/restaurant/:id", updateRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD DELETE = delete restaurant
+// @ACCESS Private
+// router.delete('/restaurant/:id', (req, res)=>{
+//     //code body
+//     res.send('Hello, DELETE')
+// })
+
+// After using controllers, the codes are written in the controllers
+router.delete("/restaurant/:id", deleteRestaurant);
+
+//export
+module.exports = router;
+```
+
+## Step 2 Create new folder: middlewares in the same level as other folders; controllers, routes
+1. Create new folder: middlewares
+2. Create new file: auth.js
+3. Move codes from routes\restaurant.js
+```js
+// Middleware
+// 1st sample
+// const authCheck = (req, res, next) => {
+//   //code body
+//   console.log('Hello, Middleware');
+//   next();
+// }
+
+// 2nd sample: Aj. taught logic of trycatch
+const authCheck = (req, res, next) => {
+  // code body
+  try {
+    console.log("Hello, Middleware");
+    if (false) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+```
+4. Paste in middlewares\auth.js
+5. Revise code to enable to exports to be used in other sections
+```bash
+const authCheck = (req, res, next) => {}
+```
+to
+```bash
+exports.authCheck = (req, res, next) => {}
+```
+```js
+exports.authCheck = (req, res, next) => {
+  // code body
+  try {
+    console.log("Hello, Middleware");
+    if (false) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
+## Step 3 Go to routes\restaurant.js
+1. import middlewares\auth
+```bash
+const { authCheck } = require("../middleware/auth");
+```
+2. use authCheck at router.get - listRestaurant
+```bash
+router.get("/restaurant", authCheck, listRestaurant);
+```
+- Then test it via Postman, if the codes work properly
+- result terminal: Hello, Middlewares
+- result Postman: Unauthorized
+```js
+//import syntax for api part
+const express = require("express");
+const router = express.Router();
+// import Controllers
+const {
+  listRestaurant,
+  readRestaurant,
+  createRestaurant,
+  updateRestaurant,
+  deleteRestaurant,
+} = require("../controllers/restaurant");
+
+const { authCheck } = require("../middlewares/auth");
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD GET = list restaurant (list all data)
+// @ACCESS Public
+// ** Before using controllers, the codes are written in the routes
+// router.get('/restaurant', (req, res)=> {
+//     //code body
+//     res.send("Hello Route")
+// })
+
+
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+router.get("/restaurant", authCheck, listRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant/id
+// @ENDPOINT http://localhost:5000/api/restaurant/5
+// @METHOD GET = Read restaurant
+// @ACCESS Public
+// Method read restaurant by id
+// id is required
+// ** Before using controllers, the codes are written in the routes
+// router.get('/restaurant/:id', (req, res)=>{
+//     //code body
+//     res.send("Hello Route")
+// })
+
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+// @ENDPOINT http://localhost:5000/api/restaurant/5
+router.get("/restaurant/:id", readRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD POST = create restaurant
+// @ACCESS Private
+// Body = needed
+// ** Before using controllers, the codes are written in the routes
+// router.post('/restaurant', (req, res)=> {
+//     //code body
+//     const { menu, price } = req.body
+//     console.log(menu)
+//     console.log(price)
+//     res.send("Hello, POST Restaurant")
+// })
+// After using controllers, the codes are written in the controllers
+// ** The controllers are imported in the routes
+// @ENDPOINT http://localhost:5000/api/restaurant
+router.post("/restaurant", createRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant/9
+// @METHOD PUT = edit restaurant
+// id is required
+// @ACCESS Private
+// router.put('/restaurant/:id', (req, res)=>{
+//code body
+//     console.log(req.params.id)
+//     res.send("Restaurant Edit PUT")
+// })
+
+// After using controllers, the codes are written in the controllers
+router.put("/restaurant/:id", updateRestaurant);
+
+// @ENDPOINT http://localhost:5000/api/restaurant
+// @METHOD DELETE = delete restaurant
+// @ACCESS Private
+// router.delete('/restaurant/:id', (req, res)=>{
+//     //code body
+//     res.send('Hello, DELETE')
+// })
+
+// After using controllers, the codes are written in the controllers
+router.delete("/restaurant/:id", deleteRestaurant);
+
+//export
+module.exports = router;
+```
+
+## Step 4 Go to middlewares\auth.js
+1. change if(false) --> if(true)
+- from this one
+```js
+exports.authCheck = (req, res, next) => {
+  // code body
+  try {
+    console.log("Hello, Middleware");
+    if (false) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
+To this one
+```js
+exports.authCheck = (req, res, next) => {
+  // code body
+  try {
+    console.log("Hello, Middleware");
+    if (true) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
+And test via Postman, getting result
+> Hello, Middleware //
+> Hello, Controllers
+
+## Step 5 Go to server.js
+1. Import morgan 
+- morgan (middleware) to let us know what methods (post, put, patch, get, etc) are used
+- examples' results
+```plaintext
+> Server is running on port 5000 /
+> Hello, Middleware /
+> Hello, Controllers /
+> GET /api/restaurant 200 3.269 ms - 18/
+> Hello, Controllers/
+> { menu: 'Route 330', price: 500 }/
+> POST /api/restaurant/ 200 1.593 ms - 22/
+```
+```js
+//import express library
+const express = require('express')
+const cors = require('cors')
+const app = express()
+
+const restaurantRoute = require('./routes/restaurant')
+const morgan = require('morgan')
+
+// middleware
+app.use(cors())
+app.use(express.json()) // for letting server to understand json data (client send json data to server)
+app.use(morgan('dev'))
+//CRUD Method: GET, POST, PUT, PATCH, DELETE
+app.use('/api', restaurantRoute)
+
+
+
+// app.get('/', (req, res)=> {
+//     //code body
+//     res.json({message:'Hello'})
+// })
+
+
+
+// app.get("/", (req, res)=> {
+//     console.log('hello Easy Backend')
+//     // res.send('Hello Easy Backend')
+//     const june = 'easy backend'
+//     res.json({ june })
+// })
+
+
+
+const PORT = 5000
+app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
+```
+

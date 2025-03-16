@@ -24,7 +24,7 @@ exports.listRestaurant = (req, res)=> {
     try {
        //code body 
        console.log('Hello, Controllers')
-       console.log(July)
+    //    console.log(July)
        res.send('Hello, Controllers')
     } catch (error) {
         console.log(error.message)
