@@ -1088,3 +1088,45 @@ const PORT = 5000
 app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
 ```
 
+# EP.16 Route Profile
+## Step 1 Create File: routes\profile.js
+```js
+const express = require('express');
+const router = express.Router();
+
+
+// @ENDPOINT http://localhost:5000/api/profile
+router.post('/profile')
+
+
+module.exports = router;
+```
+
+## Step 2 Create file: controllers\profile.js
+```js
+exports.createProfile = (req, res) => {
+    try {
+        // code body
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+```
+## Step 3 Go to routes\profile.js
+- import controllers\profile.js
+```js
+const express = require('express');
+const router = express.Router();
+// controllers
+const { createProfile } = require('../controllers/profile');
+
+// @ENDPOINT http://localhost:5000/api/profile
+router.post('/profile', createProfile);
+
+
+module.exports = router;
+```
+
