@@ -1,17 +1,26 @@
 //import express library
 const express = require('express')
 const cors = require('cors')
+const morgan = require('morgan')
 const app = express()
 
-const restaurantRoute = require('./routes/restaurant')
-const morgan = require('morgan')
+const { readdirSync, read } = require('fs')
+
+// const restaurantRoute = require('./routes/restaurant')
+// const profileRoute = require('./routes/profile')
 
 // middleware
 app.use(cors())
 app.use(express.json()) // for letting server to understand json data (client send json data to server)
 app.use(morgan('dev'))
 //CRUD Method: GET, POST, PUT, PATCH, DELETE
-app.use('/api', restaurantRoute)
+
+
+// console.log(readdirSync('./routes'))
+readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
+
+// app.use('/api', restaurantRoute)
+// app.use('/api', profileRoute)
 
 
 

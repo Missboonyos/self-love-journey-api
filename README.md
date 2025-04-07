@@ -1129,4 +1129,8 @@ router.post('/profile', createProfile);
 
 module.exports = router;
 ```
+## Step 4 Go to server.js
+- import routes\profile.js
+```js
+
 
