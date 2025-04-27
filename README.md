@@ -1177,4 +1177,138 @@ readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
 const PORT = 5000
 app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
 ```
+# EP.17 Error Handler
+## Step 1 Go to server.js
+1. Go to https://expressjs.com/en/guide/error-handling.html
+- Go to Writing error handlers & copy codes & paste codes at the bottom part before const PORT = 5000;
 
+```js
+app.use((err, req, res, next) => {
+  // code body  
+  res.status(500).json({ message: "Something Wrong !!!"});
+});
+```
+- The whole codes in server.js are now as below.
+```js
+//import express library
+const express = require('express')
+const cors = require('cors')
+const morgan = require('morgan')
+const app = express()
+
+const { readdirSync, read } = require('fs')
+
+// const restaurantRoute = require('./routes/restaurant')
+// const profileRoute = require('./routes/profile')
+
+// middleware
+app.use(cors())
+app.use(express.json()) // for letting server to understand json data (client send json data to server)
+app.use(morgan('dev'))
+//CRUD Method: GET, POST, PUT, PATCH, DELETE
+
+
+// console.log(readdirSync('./routes'))
+readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
+
+// app.use('/api', restaurantRoute)
+// app.use('/api', profileRoute)
+
+
+
+// app.get('/', (req, res)=> {
+//     //code body
+//     res.json({message:'Hello'})
+// })
+
+
+
+// app.get("/", (req, res)=> {
+//     console.log('hello Easy Backend')
+//     // res.send('Hello Easy Backend')
+//     const june = 'easy backend'
+//     res.json({ june })
+// })
+
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+    // code body
+    res.status(500).json({ message: "Something went wrong" })
+});
+
+const PORT = 5000
+app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
+```
+
+## Step 2 Go to controllers \ profile.js
+1. Test error by coding: console.log(efededdss) under try { }
+2. Go to postman and test the error
+- PORT create profile --> result: 500 internal server error
+
+Codes before error testing
+```js
+exports.createProfile = (req, res) => {
+    try {
+        // code body
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+```
+Codes after try creating error
+```js
+exports.createProfile = (req, res) => {
+    try {
+        // code body
+        console.log(asdf)
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+```
+
+3. Bcos we want POSTMAN to display error: Sth wrong, we add the codes in the catch section.
+- if there's an error in try-section, function in catch-section will operate.
+- result in POSTMAN will show 'Something went wrong!!!'
+
+code before adding error
+```js
+exports.createProfile = (req, res) => {
+    try {
+        // code body
+        console.log(asdf)
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+```
+
+codes after adding errors
+```js
+exports.createProfile = (req, res) => {
+    try {
+        // code body
+        console.log(asdf)
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error);
+        // Handle error
+        throw new Error();
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+```
+4. Ajarn suggested to create templates of status code & error messages 
+- this is to eliminate redundant codes cos there'll be many end points in one project.
+** stop at 5.07/17:14 ep 17 **

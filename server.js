@@ -39,6 +39,11 @@ readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
 // })
 
 
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+    // code body
+    res.status(500).json({ message: "Something went wrong" })
+});
 
 const PORT = 5000
 app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
