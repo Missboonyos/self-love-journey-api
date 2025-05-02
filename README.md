@@ -1311,4 +1311,7 @@ exports.createProfile = (req, res) => {
 ```
 4. Ajarn suggested to create templates of status code & error messages 
 - this is to eliminate redundant codes cos there'll be many end points in one project.
-** stop at 5.07/17:14 ep 17 **
+
+## Step 3 Create new folder: utils & new file: renderError.js
+1. create normal function const renderError
+
