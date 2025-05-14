@@ -1315,3 +1315,204 @@ exports.createProfile = (req, res) => {
 ## Step 3 Create new folder: utils & new file: renderError.js
 1. create normal function const renderError
 
+```js
+const renderError = (code, message) => {
+    //code body
+    const error = new Error(message) 
+    // new Error is class
+    // new Error(message) is an instance of Error class, message is the message of the error
+    // const error created an object of Error class
+    error.statusCode = code
+    // error.statusCode = code is setting the status code of the error
+    // create new property statusCode in error object
+
+    throw error 
+}
+
+module.exports = renderError
+```
+
+2. Go to controllers \ profile.js
+- add next at exports.createProfile = (req, res, next)
+- delete the codes under catch (error) & add next (error) instead
+console.log(error);
+        // Handle error
+        throw new Error();
+        res.status(500).json({ message: 'Server error' });
+- test at Postman at POST / api / profile
+if we get internal error 500 & the error message shows "sth went wrong", it means next (error) is working
+
+```js
+const renderError = require("../utils/renderError");
+
+exports.createProfile = (req, res, next) => {
+    try {
+        // code body
+        if (true) {
+            return renderError(400, "Bad Request");
+        }
+
+        console.log(asdf)
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error.message);
+        // // Handle error
+        // throw new Error();
+        // res.status(500).json({ message: 'Server error' });
+        next(error);
+    }
+}
+```
+
+3. Go to server.js
+- add error.statusCode || at res.status
+- test again in POSTMAN
+
+```js
+//import express library
+const express = require('express')
+const cors = require('cors')
+const morgan = require('morgan')
+const app = express()
+
+const { readdirSync, read } = require('fs')
+
+// const restaurantRoute = require('./routes/restaurant')
+// const profileRoute = require('./routes/profile')
+
+// middleware
+app.use(cors())
+app.use(express.json()) // for letting server to understand json data (client send json data to server)
+app.use(morgan('dev'))
+//CRUD Method: GET, POST, PUT, PATCH, DELETE
+
+
+// console.log(readdirSync('./routes'))
+readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
+
+// app.use('/api', restaurantRoute)
+// app.use('/api', profileRoute)
+
+
+
+// app.get('/', (req, res)=> {
+//     //code body
+//     res.json({message:'Hello'})
+// })
+
+
+
+// app.get("/", (req, res)=> {
+//     console.log('hello Easy Backend')
+//     // res.send('Hello Easy Backend')
+//     const june = 'easy backend'
+//     res.json({ june })
+// })
+
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+    // code body
+    res.status(err.statusCode || 500)
+    .json({ message: err.message || "Something went wrong" })
+});
+
+const PORT = 5000
+app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
+```
+
+4. Create new file: middlewares \ error.js
+- cut the following codes from server.js & paste on this new file: error.js
+(err, req, res, next) => {
+    // code body
+    res.status(err.statusCode || 500)
+    .json({ message: err.message || "Something went wrong" })
+}
+
+```js
+const handleError = (err, req, res, next) => {
+    // code body
+    res.status(err.statusCode || 500)
+    .json({ message: err.message || "Something went wrong" })
+}
+
+module.exports = handleError
+```
+
+5. Go to server.js
+- use handleError at app.use
+
+```js
+//import express library
+const express = require('express')
+const cors = require('cors')
+const morgan = require('morgan')
+const app = express()
+
+const { readdirSync, read } = require('fs')
+const handleError = require('./middlewares/error')
+
+// const restaurantRoute = require('./routes/restaurant')
+// const profileRoute = require('./routes/profile')
+
+// middleware
+app.use(cors())
+app.use(express.json()) // for letting server to understand json data (client send json data to server)
+app.use(morgan('dev'))
+//CRUD Method: GET, POST, PUT, PATCH, DELETE
+
+
+// console.log(readdirSync('./routes'))
+readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
+
+// app.use('/api', restaurantRoute)
+// app.use('/api', profileRoute)
+
+
+
+// app.get('/', (req, res)=> {
+//     //code body
+//     res.json({message:'Hello'})
+// })
+
+
+
+// app.get("/", (req, res)=> {
+//     console.log('hello Easy Backend')
+//     // res.send('Hello Easy Backend')
+//     const june = 'easy backend'
+//     res.json({ june })
+// })
+
+
+// Error Handling Middleware
+app.use(handleError);
+
+const PORT = 5000
+app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
+```
+- test handleError at POSTMAN by changing status code from 400 --> 401 and error message from bad request --> Token Expired
+
+```js
+const renderError = require("../utils/renderError");
+
+exports.createProfile = (req, res, next) => {
+    try {
+        // code body
+        if (true) {
+            return renderError(401, "Token expired");
+        }
+
+        console.log(asdf)
+        console.log('Hello createProfile');
+        res.json({ message: 'Profile created successfully' });
+    } catch (error) {
+        console.log(error.message);
+        // // Handle error
+        // throw new Error();
+        // res.status(500).json({ message: 'Server error' });
+        next(error);
+    }
+}
+```

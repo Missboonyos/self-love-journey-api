@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const app = express()
 
 const { readdirSync, read } = require('fs')
+const handleError = require('./middlewares/error')
 
 // const restaurantRoute = require('./routes/restaurant')
 // const profileRoute = require('./routes/profile')
@@ -40,10 +41,7 @@ readdirSync('./routes').map((r)=> app.use('/api', require('./routes/' + r)))
 
 
 // Error Handling Middleware
-app.use((err, req, res, next) => {
-    // code body
-    res.status(500).json({ message: "Something went wrong" })
-});
+app.use(handleError);
 
 const PORT = 5000
 app.listen(PORT, ()=>console.log(`Server is running on port ${PORT}`))
