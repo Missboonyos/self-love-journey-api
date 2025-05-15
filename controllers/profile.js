@@ -3,11 +3,11 @@ const renderError = require("../utils/renderError");
 exports.createProfile = (req, res, next) => {
     try {
         // code body
-        if (true) {
-            return renderError(401, "Token expired");
-        }
+        // if (true) {
+        //     return renderError(401, "Token expired");
+        // }
 
-        console.log(asdf)
+        // console.log(asdf)
         console.log('Hello createProfile');
         res.json({ message: 'Profile created successfully' });
     } catch (error) {
